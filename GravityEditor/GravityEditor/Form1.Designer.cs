@@ -643,7 +643,7 @@
         private System.Windows.Forms.ToolStripMenuItem quickGuideToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.PictureBox drawingBox;
+        public System.Windows.Forms.PictureBox drawingBox;
         private System.Windows.Forms.TabControl contextControl;
         private System.Windows.Forms.TabPage texturePage;
         private System.Windows.Forms.ListView listView1;

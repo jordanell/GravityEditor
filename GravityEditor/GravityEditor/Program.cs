@@ -15,7 +15,14 @@ namespace GravityEditor
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow());
+
+            MainWindow form = new MainWindow();
+            form.Show();
+
+            Logger.Instance.log("Creating XNA Game object (GravityEditor).");
+
+            using (GravityEditor game = new GravityEditor(form.getHandle()))
+                game.Run();
         }
     }
 }

@@ -1,9 +1,10 @@
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\bin\Debug\GravityEditor.exe
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\bin\Debug\GravityEditor.pdb
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.Form1.resources
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.Properties.Resources.resources
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GenerateResource.read.1.tlog
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GenerateResource.write.1.tlog
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.exe
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.pdb
+C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.MainWindow.resources
+C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\bin\Debug\GravityEditor.exe.config

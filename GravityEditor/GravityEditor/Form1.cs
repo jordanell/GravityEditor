@@ -11,9 +11,17 @@ namespace GravityEditor
 {
     public partial class MainWindow : Form
     {
+        public static MainWindow Instance;
+
         public MainWindow()
         {
+            Instance = this;
             InitializeComponent();
+        }
+
+        public IntPtr getHandle()
+        {
+            return drawingBox.Handle;
         }
 
         private void newMapButton_Click(object sender, EventArgs e)
