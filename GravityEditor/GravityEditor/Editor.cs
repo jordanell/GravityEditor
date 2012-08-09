@@ -36,6 +36,7 @@ namespace GravityEditor
         // Random variables
         EditorState state;
         public Texture2D dummytexture;
+        Forms.Cursor cursorRot, cursorScale, cursorDup;
 
         // Editor Variables
         private bool commandInProgress = false;
@@ -81,6 +82,10 @@ namespace GravityEditor
             Logger.Instance.log("Loading preferences.");
             Preferences.Instance.Import("preferences.xml");
             Logger.Instance.log("Preferences loaded.");
+
+            Logger.Instance.log("Creating new level.");
+            MainWindow.Instance.newMap();
+            Logger.Instance.log("New level created.");
         }
 
         public void loadMap(TileMap.TileMap map)
@@ -456,7 +461,8 @@ namespace GravityEditor
 
         public Tile getItemAtPos(Vector2 mouseworldpos)
         {
-            if (SelectedLayer == null) return null;
+            if (SelectedLayer == null)
+                return null;
             return SelectedLayer.getItemAtPos(mouseworldpos);
         }
 
@@ -491,13 +497,375 @@ namespace GravityEditor
 
         public void Update(GameTime gameTime)
         {
+            if (map == null) 
+                return;
 
+            oldkstate = kstate;
+            oldmstate = mstate;
+            kstate = Keyboard.GetState();
+            mstate = Mouse.GetState();
+            int mwheeldelta = mstate.ScrollWheelValue - oldmstate.ScrollWheelValue;
+
+            if (mwheeldelta > 0)
+            {
+                float zoom = (float)Math.Round(camera.Scale * 10) * 10.0f + 10.0f;
+                MainWindow.Instance.zoomCombo.Text = zoom.ToString() + "%";
+                camera.Scale = zoom / 100.0f;
+            }
+            if (mwheeldelta < 0 )
+            {
+                float zoom = (float)Math.Round(camera.Scale * 10) * 10.0f - 10.0f;
+                if (zoom <= 0.0f) return;
+                MainWindow.Instance.zoomCombo.Text = zoom.ToString() + "%";
+                camera.Scale = zoom / 100.0f;
+            }
+
+            //Camera movement
+            float delta;
+            if (kstate.IsKeyDown(Keys.LeftShift)) 
+                delta = Preferences.Instance.CameraFastSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            else 
+                delta = Preferences.Instance.CameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (kstate.IsKeyDown(Keys.W) && kstate.IsKeyUp(Keys.LeftControl)) 
+                camera.Position += (new Vector2(0, -delta));
+            if (kstate.IsKeyDown(Keys.S) && kstate.IsKeyUp(Keys.LeftControl)) 
+                camera.Position += (new Vector2(0, +delta));
+            if (kstate.IsKeyDown(Keys.A) && kstate.IsKeyUp(Keys.LeftControl)) 
+                camera.Position += (new Vector2(-delta, 0));
+            if (kstate.IsKeyDown(Keys.D) && kstate.IsKeyUp(Keys.LeftControl)) 
+                camera.Position += (new Vector2(+delta, 0));
+
+
+            if (kstate.IsKeyDown(Keys.Subtract))
+            {
+                float zoom = (float)(camera.Scale * 0.995);
+                MainWindow.Instance.zoomCombo.Text = (zoom * 100).ToString("###0.0") + "%";
+                camera.Scale = zoom;
+            }
+            if (kstate.IsKeyDown(Keys.Add))
+            {
+                float zoom = (float)(camera.Scale * 1.005);
+                MainWindow.Instance.zoomCombo.Text = (zoom * 100).ToString("###0.0") + "%";
+                camera.Scale = zoom;
+            }
+
+            //get mouse world position considering the ScrollSpeed of the current layer
+            Vector2 maincameraposition = camera.Position;
+            if (SelectedLayer != null) 
+                camera.Position *= SelectedLayer.ScrollSpeed;
+            mouseworldpos = Vector2.Transform(new Vector2(mstate.X, mstate.Y), Matrix.Invert(camera.matrix));
+            mouseworldpos = mouseworldpos.Round();
+            camera.Position = maincameraposition;
+
+
+            if (state == EditorState.idle)
+            {
+                //get item under mouse cursor
+                Tile item = getItemAtPos(mouseworldpos);
+                if (item != null)
+                {
+                    item.onMouseOver(mouseworldpos);
+                    if (kstate.IsKeyDown(Keys.LeftControl)) 
+                        MainWindow.Instance.drawingBox.Cursor = cursorDup;
+                }
+                if (item != lastTile && lastTile != null)
+                    lastTile.onMouseOut();
+                lastTile = item;
+
+                //LEFT MOUSE BUTTON CLICK
+                if ((mstate.LeftButton == ButtonState.Pressed && oldmstate.LeftButton == ButtonState.Released) ||
+                    (kstate.IsKeyDown(Keys.D1) && oldkstate.IsKeyUp(Keys.D1)))
+                {
+                    if (item != null) item.onMouseButtonDown(mouseworldpos);
+                    if (kstate.IsKeyDown(Keys.LeftControl) && item != null)
+                    {
+                        if (!SelectedTiles.Contains(item)) 
+                            selectTile(item);
+
+                        beginCommand("Add Item(s)");
+
+                        List<Tile> selecteditemscopy = new List<Tile>();
+                        foreach (Tile selitem in SelectedTiles)
+                        {
+                            Tile i2 = (Tile)selitem.clone();
+                            selecteditemscopy.Add(i2);
+                        }
+                        foreach (Tile selitem in selecteditemscopy)
+                        {
+                            selitem.Name = selitem.getNamePrefix() + map.getNextItemNumber();
+                            addItem(selitem);
+                        }
+                        selectTile(selecteditemscopy[0]);
+                        updateTreeView();
+                        for (int i = 1; i < selecteditemscopy.Count; i++) SelectedTiles.Add(selecteditemscopy[i]);
+                        startMoving();
+                    }
+                    else if (kstate.IsKeyDown(Keys.LeftShift) && item != null)
+                    {
+                        if (SelectedTiles.Contains(item)) SelectedTiles.Remove(item);
+                        else SelectedTiles.Add(item);
+                    }
+                    else if (SelectedTiles.Contains(item))
+                    {
+                        beginCommand("Change Item(s)");
+                        startMoving();
+                    }
+                    else if (!SelectedTiles.Contains(item))
+                    {
+                        selectTile(item);
+                        if (item != null)
+                        {
+                            beginCommand("Change Item(s)");
+                            startMoving();
+                        }
+                        else
+                        {
+                            grabbedpoint = mouseworldpos;
+                            selectionrectangle = Rectangle.Empty;
+                            state = EditorState.selecting;
+                        }
+
+                    }
+                }
+
+                //MIDDLE MOUSE BUTTON CLICK
+                if ((mstate.MiddleButton == ButtonState.Pressed && oldmstate.MiddleButton == ButtonState.Released) ||
+                    (kstate.IsKeyDown(Keys.D2) && oldkstate.IsKeyUp(Keys.D2)))
+                {
+                    if (item != null) item.onMouseOut();
+                    if (kstate.IsKeyDown(Keys.LeftControl))
+                    {
+                        grabbedpoint = new Vector2(mstate.X, mstate.Y);
+                        initialcampos = camera.Position;
+                        state = EditorState.cameramoving;
+                        MainWindow.Instance.drawingBox.Cursor = Forms.Cursors.SizeAll;
+                    }
+                    else
+                    {
+                        if (SelectedTiles.Count > 0)
+                        {
+                            grabbedpoint = mouseworldpos - SelectedTiles[0].pPosition;
+
+                            //save the initial rotation for each item
+                            initialrot.Clear();
+                            foreach (Tile selitem in SelectedTiles)
+                            {
+                                initialrot.Add(selitem.Rotation);
+                            }
+
+                            state = EditorState.rotating;
+                            MainWindow.Instance.drawingBox.Cursor = cursorRot;
+
+                            beginCommand("Rotate Item(s)");
+                        }
+                    }
+                }
+
+                //RIGHT MOUSE BUTTON CLICK
+                if ((mstate.RightButton == ButtonState.Pressed && oldmstate.RightButton == ButtonState.Released) ||
+                    (kstate.IsKeyDown(Keys.D3) && oldkstate.IsKeyUp(Keys.D3)))
+                {
+                    if (item != null) item.onMouseOut();
+                    if (SelectedTiles.Count > 0)
+                    {
+                        grabbedpoint = mouseworldpos - SelectedTiles[0].pPosition;
+
+                        //save the initial scale for each item
+                        initialscale.Clear();
+                        foreach (Tile selitem in SelectedTiles)
+                        {
+                            initialscale.Add(selitem.Scale);
+                        }
+
+                        state = EditorState.scaling;
+                        MainWindow.Instance.drawingBox.Cursor = cursorScale;
+
+                        beginCommand("Scale Item(s)");
+                    }
+                }
+            }
+
+            if (state == EditorState.moving)
+            {
+                int i = 0;
+                foreach (Tile selitem in SelectedTiles)
+                {
+                    newPosition = initialpos[i] + mouseworldpos - grabbedpoint;
+                    if (Preferences.Instance.SnapToGrid || kstate.IsKeyDown(Keys.G)) 
+                        newPosition = snapToGrid(newPosition);
+                    drawSnappedPoint = false;
+                    selitem.pPosition = newPosition;
+                    i++;
+                }
+                MainWindow.Instance.propertyGrid1.Refresh();
+                if ((mstate.LeftButton == ButtonState.Released && oldmstate.LeftButton == ButtonState.Pressed) ||
+                    (kstate.IsKeyUp(Keys.D1) && oldkstate.IsKeyDown(Keys.D1)))
+                {
+
+                    foreach (Tile selitem in SelectedTiles) 
+                        selitem.onMouseButtonUp(mouseworldpos);
+
+                    state = EditorState.idle;
+                    MainWindow.Instance.drawingBox.Cursor = Forms.Cursors.Default;
+                    if (mouseworldpos != grabbedpoint) endCommand(); else abortCommand();
+                }
+            }
+
+            if (state == EditorState.rotating)
+            {
+                Vector2 newpos = mouseworldpos - SelectedTiles[0].pPosition;
+                float deltatheta = (float)Math.Atan2(grabbedpoint.Y, grabbedpoint.X) - (float)Math.Atan2(newpos.Y, newpos.X);
+                int i = 0;
+                foreach (Tile selitem in SelectedTiles)
+                {
+                        selitem.Rotation = initialrot[i] - deltatheta;
+
+                        if (kstate.IsKeyDown(Keys.LeftControl))
+                        {
+                            selitem.pRotation = ((float)Math.Round(selitem.pRotation / MathHelper.PiOver4) * MathHelper.PiOver4);
+                        }
+                        i++;
+                }
+                MainWindow.Instance.propertyGrid1.Refresh();
+                if ((mstate.MiddleButton == ButtonState.Released && oldmstate.MiddleButton == ButtonState.Pressed) ||
+                    (kstate.IsKeyUp(Keys.D2) && oldkstate.IsKeyDown(Keys.D2)))
+                {
+                    state = EditorState.idle;
+                    MainWindow.Instance.drawingBox.Cursor = Forms.Cursors.Default;
+                    endCommand();
+                }
+            }
+
+            if (state == EditorState.scaling)
+            {
+                Vector2 newdistance = mouseworldpos - SelectedTiles[0].pPosition;
+                float factor = newdistance.Length() / grabbedpoint.Length();
+                int i = 0;
+                foreach (Tile selitem in SelectedTiles)
+                {
+                        Vector2 newscale = initialscale[i];
+                        if (!kstate.IsKeyDown(Keys.Y)) newscale.X = initialscale[i].X * (((factor - 1.0f) * 0.5f) + 1.0f);
+                        if (!kstate.IsKeyDown(Keys.X)) newscale.Y = initialscale[i].Y * (((factor - 1.0f) * 0.5f) + 1.0f);
+                        selitem.pScale = (newscale);
+
+                        if (kstate.IsKeyDown(Keys.LeftControl))
+                        {
+                            Vector2 scale;
+                            scale.X = (float)Math.Round(selitem.pScale.X * 10) / 10;
+                            scale.Y = (float)Math.Round(selitem.pScale.Y * 10) / 10;
+                            selitem.pScale = (scale);
+                        }
+                        i++;
+                }
+                MainWindow.Instance.propertyGrid1.Refresh();
+                if ((mstate.RightButton == ButtonState.Released && oldmstate.RightButton == ButtonState.Pressed) ||
+                    (kstate.IsKeyUp(Keys.D3) && oldkstate.IsKeyDown(Keys.D3)))
+                {
+                    state = EditorState.idle;
+                    MainWindow.Instance.drawingBox.Cursor = Forms.Cursors.Default;
+                    endCommand();
+                }
+            }
+
+            if (state == EditorState.cameramoving)
+            {
+                Vector2 newpos = new Vector2(mstate.X, mstate.Y);
+                Vector2 distance = (newpos - grabbedpoint) / camera.Scale;
+                if (distance.Length() > 0)
+                {
+                    camera.Position = initialcampos - distance;
+                }
+                if (mstate.MiddleButton == ButtonState.Released)
+                {
+                    state = EditorState.idle;
+                    MainWindow.Instance.drawingBox.Cursor = Forms.Cursors.Default;
+                }
+            }
+
+            if (state == EditorState.selecting)
+            {
+                if (SelectedLayer == null) return;
+                Vector2 distance = mouseworldpos - grabbedpoint;
+                if (distance.Length() > 0)
+                {
+                    SelectedTiles.Clear();
+                    selectionrectangle = Extensions.RectangleFromVectors(grabbedpoint, mouseworldpos);
+                    foreach (Tile i in SelectedLayer.Tiles)
+                    {
+                        if (i.Visible && selectionrectangle.Contains((int)i.pPosition.X, (int)i.pPosition.Y)) SelectedTiles.Add(i);
+                    }
+                    updateTreeViewSelection();
+                }
+                if (mstate.LeftButton == ButtonState.Released)
+                {
+                    state = EditorState.idle;
+                    MainWindow.Instance.drawingBox.Cursor = Forms.Cursors.Default;
+                }
+            }
+
+            if (state == EditorState.brush)
+            {
+                if (Preferences.Instance.SnapToGrid || kstate.IsKeyDown(Keys.G))
+                {
+                    mouseworldpos = snapToGrid(mouseworldpos);
+                }
+                if (mstate.RightButton == ButtonState.Pressed && oldmstate.RightButton == ButtonState.Released) state = EditorState.idle;
+                if (mstate.LeftButton == ButtonState.Pressed && oldmstate.LeftButton == ButtonState.Released) paintTextureBrush(true);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             GravityEditor.Instance.GraphicsDevice.Clear(Preferences.Instance.ColorBackground);
+            if (map == null || !map.Visible) 
+                return;
 
+            foreach (TileLayer l in map.Layers)
+            {
+                Vector2 maincameraposition = camera.Position;
+                camera.Position *= l.ScrollSpeed;
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.matrix);
+
+                l.drawInEditor(spriteBatch);
+                if (l == SelectedLayer && state == EditorState.selecting)
+                {
+                    Primitives.Instance.drawBoxFilled(spriteBatch, selectionrectangle, Preferences.Instance.ColorSelectionBox);
+                }
+                if (l == SelectedLayer && state == EditorState.brush)
+                {
+                    spriteBatch.Draw(currentbrush.texture, new Vector2(mouseworldpos.X, mouseworldpos.Y), null, new Color(1f, 1f, 1f, 0.7f),
+                        0, new Vector2(currentbrush.texture.Width / 2, currentbrush.texture.Height / 2), 1, SpriteEffects.None, 0);
+                }
+                spriteBatch.End();
+                //restore main camera position
+                camera.Position = maincameraposition;
+            }
+
+            if (SelectedTiles.Count > 0)
+            {
+                Vector2 maincameraposition = camera.Position;
+                camera.Position *= SelectedTiles[0].layer.ScrollSpeed;
+                spriteBatch.Begin();
+                int i = 0;
+                foreach (Tile item in SelectedTiles)
+                {
+                    if (item.Visible && item.layer.Visible && kstate.IsKeyUp(Keys.Space))
+                    {
+                        Color color = i == 0 ? Preferences.Instance.ColorSelectionFirst : Preferences.Instance.ColorSelectionRest;
+                        item.drawSelectionFrame(spriteBatch, camera.matrix, color);
+                        if (i == 0 && (state == EditorState.rotating || state == EditorState.scaling))
+                        {
+                            Vector2 center = Vector2.Transform(item.Position, camera.matrix);
+                            Vector2 mouse = Vector2.Transform(mouseworldpos, camera.matrix);
+                            Primitives.Instance.drawLine(spriteBatch, center, mouse, Preferences.Instance.ColorSelectionFirst, 1);
+                        }
+                    }
+                    i++;
+                }
+                spriteBatch.End();
+                //restore main camera position
+                camera.Position = maincameraposition;
+            }
 
 
             if (Preferences.Instance.ShowGrid)
@@ -533,6 +901,16 @@ namespace GravityEditor
                 Primitives.Instance.drawLine(spriteBatch, worldOrigin + new Vector2(0, -20), worldOrigin + new Vector2(0, 20), Preferences.Instance.WorldOriginColor, Preferences.Instance.WorldOriginLineThickness);
                 spriteBatch.End();
             }
+
+            if (drawSnappedPoint)
+            {
+                spriteBatch.Begin();
+                posSnappedPoint = Vector2.Transform(posSnappedPoint, camera.matrix);
+                Primitives.Instance.drawBoxFilled(spriteBatch, posSnappedPoint.X - 5, posSnappedPoint.Y - 5, 10, 10, Preferences.Instance.ColorSelectionFirst);
+                spriteBatch.End();
+
+            }
+            drawSnappedPoint = false;
         }
     }
 }

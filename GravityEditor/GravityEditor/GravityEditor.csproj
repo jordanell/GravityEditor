@@ -65,8 +65,9 @@
     <Compile Include="GravityEditor.cs" />
     <Compile Include="IUndoable.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MathExtensions\Extensions.cs" />
     <Compile Include="Preferences.cs" />
-    <Compile Include="Math\Primitives.cs" />
+    <Compile Include="MathExtensions\Primitives.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SubViews\AddLayer.cs">
@@ -86,7 +87,7 @@
     <Compile Include="TileMap\Tile.cs" />
     <Compile Include="TileMap\TileLayer.cs" />
     <Compile Include="TileMap\TileMap.cs" />
-    <Compile Include="Math\Verticies.cs" />
+    <Compile Include="MathExtensions\Verticies.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

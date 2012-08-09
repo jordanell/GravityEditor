@@ -118,22 +118,23 @@ namespace GravityEditor.TileMap
 
         public Tile()
         {
-
+            Visible = true;
         }
 
         public Tile(String fullpath, Vector2 position)
         {
             this.texture_fullpath = fullpath;
-            this.Position = position;
+            this.Visible = true;
             this.Rotation = 0;
             this.Scale = Vector2.One;
             this.TintColor = Microsoft.Xna.Framework.Color.White;
+            loadIntoEditor();
+            this.pPosition = position;
+
             this.Origin = getTextureOrigin(texture);
 
-            loadIntoEditor();
-
             Vector2 center = new Vector2(texture.Width / 2, texture.Height / 2);
-            this.Position -= (center - Origin);
+            this.pPosition -= (center - Origin);
         }
 
         public bool loadIntoEditor()
@@ -266,11 +267,13 @@ namespace GravityEditor.TileMap
 
         public void drawInEditor(SpriteBatch sb)
         {
-            if (!Visible) return;
+            if (!Visible) 
+                return;
 
             SpriteEffects se = SpriteEffects.None;
             Color c = TintColor;
-            if (hovering && Preferences.Instance.EnableHighlightOnMouseOver) c = Preferences.Instance.ColorHighlight;
+            if (hovering && Preferences.Instance.EnableHighlightOnMouseOver) 
+                c = Preferences.Instance.ColorHighlight;
             sb.Draw(texture, Position, null, c, Rotation, Origin, Scale, se, 0);
         }
 
@@ -284,7 +287,7 @@ namespace GravityEditor.TileMap
             {
                 Primitives.Instance.drawCircleFilled(sb, p, 4, color);
             }
-            Vector2 origin = Vector2.Transform(pPosition, matrix);
+            Vector2 origin = Vector2.Transform(Position, matrix);
             Primitives.Instance.drawBoxFilled(sb, origin.X - 5, origin.Y - 5, 10, 10, color);
         }
 
@@ -294,6 +297,28 @@ namespace GravityEditor.TileMap
                 return;
             SpriteEffects effects = SpriteEffects.None;
             sb.Draw(texture, Position, null, TintColor, Rotation, Origin, Scale, effects, 0);
+        }
+
+        public void onMouseOver(Vector2 mouseworldpos)
+        {
+            hovering = true;
+        }
+
+        public void onMouseOut()
+        {
+            hovering = false;
+            MainWindow.Instance.drawingBox.Cursor = Cursors.Default;
+        }
+
+        public void onMouseButtonDown(Vector2 mouseworldpos)
+        {
+            hovering = false;
+            MainWindow.Instance.drawingBox.Cursor = Cursors.SizeAll;
+        }
+
+        public void onMouseButtonUp(Vector2 mouseworldpos)
+        {
+
         }
     }
 }

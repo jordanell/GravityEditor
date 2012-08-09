@@ -36,13 +36,13 @@
     <R>255</R>
     <G>255</G>
     <B>255</B>
-    <A>109</A>
-    <PackedValue>1845493759</PackedValue>
+    <A>50</A>
+    <PackedValue>855638015</PackedValue>
   </ColorSelectionBox>
-  <DefaultContentRootFolder>C:\</DefaultContentRootFolder>
+  <DefaultContentRootFolder>C:\Users\Jordan\Documents\agilefant\web\static\img</DefaultContentRootFolder>
   <CameraSpeed>500</CameraSpeed>
   <CameraFastSpeed>2000</CameraFastSpeed>
-  <DefaultTextureOriginMethod>TextureCenter</DefaultTextureOriginMethod>
+  <DefaultTextureOriginMethod>TopLeft</DefaultTextureOriginMethod>
   <WorldOriginColor>
     <R>255</R>
     <G>255</G>

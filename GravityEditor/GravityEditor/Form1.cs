@@ -7,6 +7,10 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Xml;
 using GravityEditor.TileMap;
 using GravityEditor.SubViews;
 
@@ -18,6 +22,7 @@ namespace GravityEditor
 
         public bool dirtyFlag;
         private String mapFileName;
+        private Cursor dragcursor;
 
         public MainWindow()
         {
@@ -334,6 +339,166 @@ namespace GravityEditor
         private void originButton_Click(object sender, EventArgs e)
         {
             Preferences.Instance.ShowWorldOrigin = originButton.Checked;
+        }
+
+        private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Preferences.Instance.Export("preferences.xml");
+            GravityEditor.Instance.Exit();
+        }
+
+        private void buttonFolderUp_Click(object sender, EventArgs e)
+        {
+            if (textBoxFolder.Text != "")
+            {
+                DirectoryInfo di = Directory.GetParent(textBoxFolder.Text);
+                if (di == null) return;
+                loadFolder(di.FullName);
+            }
+        }
+
+        private void chooseFolder_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog d = new FolderBrowserDialog();
+            d.SelectedPath = textBoxFolder.Text;
+            if (d.ShowDialog() == DialogResult.OK)
+                loadFolder(d.SelectedPath);
+        }
+
+        [DllImport("User32.dll")]
+        private static extern int SendMessage(int Handle, int wMsg, int wParam, int lParam);
+        public static void SetListViewSpacing(ListView lst, int x, int y)
+        {
+            SendMessage((int)lst.Handle, 0x1000 + 53, 0, y * 65536 + x);
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0:
+                    listViewTexture.LargeImageList = imageList48;
+                    SetListViewSpacing(listViewTexture, 48 + 8, 48 + 32);
+                    break;
+                case 1:
+                    listViewTexture.LargeImageList = imageList64;
+                    SetListViewSpacing(listViewTexture, 64 + 8, 64 + 32);
+                    break;
+                case 2:
+                    listViewTexture.LargeImageList = imageList96;
+                    SetListViewSpacing(listViewTexture, 96 + 8, 96 + 32);
+                    break;
+                case 3:
+                    listViewTexture.LargeImageList = imageList128;
+                    SetListViewSpacing(listViewTexture, 128 + 8, 128 + 32);
+                    break;
+                case 4:
+                    listViewTexture.LargeImageList = imageList256;
+                    SetListViewSpacing(listViewTexture, 256 + 8, 256 + 32);
+                    break;
+            }
+        }
+
+        private void listViewTexture_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listViewTexture_DragDrop(object sender, DragEventArgs e)
+        {
+            listViewTexture.Cursor = Cursors.Default;
+            drawingBox.Cursor = Cursors.Default;
+        }
+
+        private void listViewTexture_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void listViewTexture_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+            if (e.Effect == DragDropEffects.Move)
+            {
+                e.UseDefaultCursors = false;
+                listViewTexture.Cursor = dragcursor;
+                drawingBox.Cursor = Cursors.Default;
+            }
+            else
+            {
+                e.UseDefaultCursors = true;
+                listViewTexture.Cursor = Cursors.Default;
+                drawingBox.Cursor = Cursors.Default;
+            }
+        }
+
+        private void listViewTexture_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            ListViewItem lvi = (ListViewItem)e.Item;
+            if (lvi.Tag.ToString() == "folder") return;
+            Bitmap bmp = new Bitmap(listViewTexture.LargeImageList.Images[lvi.ImageKey]);
+            dragcursor = new Cursor(bmp.GetHicon());
+            listViewTexture.DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+
+        private void listViewTexture_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            string itemtype = listViewTexture.FocusedItem.Tag.ToString();
+            if (itemtype == "folder")
+            {
+                loadFolder(listViewTexture.FocusedItem.Name);
+            }
+            if (itemtype == "file")
+            {
+                Editor.Instance.createTextureBrush(listViewTexture.FocusedItem.Name);
+            }
+        }
+
+        private void drawingBox_DragDrop(object sender, DragEventArgs e)
+        {
+            ListViewItem lvi = (ListViewItem)e.Data.GetData(typeof(ListViewItem));
+            Editor.Instance.paintTextureBrush(false);
+            listViewTexture.Cursor = Cursors.Default;
+            drawingBox.Cursor = Cursors.Default;
+        }
+
+        private void drawingBox_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+            ListViewItem lvi = (ListViewItem)e.Data.GetData(typeof(ListViewItem));
+            Editor.Instance.createTextureBrush(lvi.Name);
+        }
+
+        private void drawingBox_DragLeave(object sender, EventArgs e)
+        {
+            Editor.Instance.destroyTextureBrush();
+            Editor.Instance.Draw(GravityEditor.Instance.spriteBatch);
+            GravityEditor.Instance.GraphicsDevice.Present();
+        }
+
+        private void drawingBox_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+            Point p = drawingBox.PointToClient(new Point(e.X, e.Y));
+            Editor.Instance.setmousepos(p.X, p.Y);
+            Editor.Instance.Draw(GravityEditor.Instance.spriteBatch);
+            GravityEditor.Instance.GraphicsDevice.Present();
+        }
+
+        private void drawingBox_MouseEnter(object sender, EventArgs e)
+        {
+            drawingBox.Select();
+        }
+
+        private void drawingBox_MouseLeave(object sender, EventArgs e)
+        {
+            menuStrip1.Select();
+        }
+
+        private void drawingBox_Resize(object sender, EventArgs e)
+        {
+            Logger.Instance.log("pictureBox1_Resize().");
+            if (GravityEditor.Instance != null) GravityEditor.Instance.resizeBackBuffer(drawingBox.Width, drawingBox.Height);
+            if (Editor.Instance != null && Editor.Instance.camera != null) Editor.Instance.camera.updateViewport(drawingBox.Width, drawingBox.Height);
         }
     }
 }

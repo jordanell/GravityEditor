@@ -237,6 +237,13 @@
             this.drawingBox.Size = new System.Drawing.Size(911, 381);
             this.drawingBox.TabIndex = 0;
             this.drawingBox.TabStop = false;
+            this.drawingBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.drawingBox_DragDrop);
+            this.drawingBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.drawingBox_DragEnter);
+            this.drawingBox.DragOver += new System.Windows.Forms.DragEventHandler(this.drawingBox_DragOver);
+            this.drawingBox.DragLeave += new System.EventHandler(this.drawingBox_DragLeave);
+            this.drawingBox.MouseEnter += new System.EventHandler(this.drawingBox_MouseEnter);
+            this.drawingBox.MouseLeave += new System.EventHandler(this.drawingBox_MouseLeave);
+            this.drawingBox.Resize += new System.EventHandler(this.drawingBox_Resize);
             // 
             // contextControl
             // 
@@ -264,7 +271,7 @@
             this.texturePage.Padding = new System.Windows.Forms.Padding(3);
             this.texturePage.Size = new System.Drawing.Size(900, 211);
             this.texturePage.TabIndex = 0;
-            this.texturePage.Text = "tabPage1";
+            this.texturePage.Text = "Tiles";
             this.texturePage.UseVisualStyleBackColor = true;
             // 
             // listViewTexture
@@ -272,11 +279,18 @@
             this.listViewTexture.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.listViewTexture.LargeImageList = this.imageList64;
             this.listViewTexture.Location = new System.Drawing.Point(0, 32);
             this.listViewTexture.Name = "listViewTexture";
             this.listViewTexture.Size = new System.Drawing.Size(900, 179);
             this.listViewTexture.TabIndex = 19;
             this.listViewTexture.UseCompatibleStateImageBehavior = false;
+            this.listViewTexture.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.listViewTexture_ItemDrag);
+            this.listViewTexture.Click += new System.EventHandler(this.listViewTexture_Click);
+            this.listViewTexture.DragDrop += new System.Windows.Forms.DragEventHandler(this.listViewTexture_DragDrop);
+            this.listViewTexture.DragOver += new System.Windows.Forms.DragEventHandler(this.listViewTexture_DragOver);
+            this.listViewTexture.GiveFeedback += new System.Windows.Forms.GiveFeedbackEventHandler(this.listViewTexture_GiveFeedback);
+            this.listViewTexture.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewTexture_MouseDoubleClick);
             // 
             // chooseFolder
             // 
@@ -287,6 +301,7 @@
             this.chooseFolder.TabIndex = 18;
             this.chooseFolder.Text = "Choose...";
             this.chooseFolder.UseVisualStyleBackColor = true;
+            this.chooseFolder.Click += new System.EventHandler(this.chooseFolder_Click);
             // 
             // buttonFolderUp
             // 
@@ -297,6 +312,7 @@
             this.buttonFolderUp.Size = new System.Drawing.Size(32, 23);
             this.buttonFolderUp.TabIndex = 17;
             this.buttonFolderUp.UseVisualStyleBackColor = true;
+            this.buttonFolderUp.Click += new System.EventHandler(this.buttonFolderUp_Click);
             // 
             // label2
             // 
@@ -323,6 +339,7 @@
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(74, 21);
             this.comboBox1.TabIndex = 15;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // textBoxFolder
             // 
@@ -655,6 +672,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainWindow";
             this.Text = "Gravity Level Editor";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainWindow_FormClosed);
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
