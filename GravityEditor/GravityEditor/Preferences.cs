@@ -12,7 +12,7 @@ namespace GravityEditor
         TextureCenter, Centroid, TopLeft, TopRight, BottomLeft, BottomRight
     }
 
-    class Preferences
+    public class Preferences
     {
         private static Preferences instance;
 

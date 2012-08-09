@@ -8,3 +8,5 @@ C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityE
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.pdb
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.MainWindow.resources
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\bin\Debug\GravityEditor.exe.config
+C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.SubViews.AddLayer.resources
+C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.SubViews.PreferencesForm.resources

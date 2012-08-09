@@ -53,6 +53,8 @@
   <ItemGroup>
     <Compile Include="CustomUITypeEditors\FolderUITypeEditor.cs" />
     <Compile Include="CustomUITypeEditors\XNAColorUITypeEditors.cs" />
+    <Compile Include="Drawing\Command.cs" />
+    <Compile Include="Drawing\EditorBrush.cs" />
     <Compile Include="Editor.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -61,11 +63,24 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="GravityEditor.cs" />
+    <Compile Include="IUndoable.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Preferences.cs" />
     <Compile Include="Math\Primitives.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubViews\AddLayer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SubViews\AddLayer.Designer.cs">
+      <DependentUpon>AddLayer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SubViews\PreferencesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SubViews\PreferencesForm.Designer.cs">
+      <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextureLoader.cs" />
     <Compile Include="TileMap\Camera.cs" />
     <Compile Include="TileMap\Tile.cs" />
@@ -85,6 +100,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SubViews\AddLayer.resx">
+      <DependentUpon>AddLayer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SubViews\PreferencesForm.resx">
+      <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

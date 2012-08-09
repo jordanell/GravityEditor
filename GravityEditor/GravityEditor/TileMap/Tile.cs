@@ -22,6 +22,7 @@ namespace GravityEditor.TileMap
 {
     class Tile
     {
+        public String Name;
         public Vector2 Position;
         public float Rotation;
         public Vector2 Scale;

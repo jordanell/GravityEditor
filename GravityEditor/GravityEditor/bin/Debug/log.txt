@@ -1,4 +1,4 @@
-08/08/2012 3:44:01 PM.929 - Log file creadet.
-08/08/2012 3:44:01 PM.937 - Creating XNA Game object (GravityEditor).
-08/08/2012 3:44:02 PM.241 - Loading preferences.
-08/08/2012 3:44:02 PM.243 - Preferences loaded.
+09/08/2012 11:48:06 AM.763 - Log file creadet.
+09/08/2012 11:48:06 AM.770 - Creating XNA Game object (GravityEditor).
+09/08/2012 11:48:07 AM.078 - Loading preferences.
+09/08/2012 11:48:07 AM.227 - Preferences loaded.
