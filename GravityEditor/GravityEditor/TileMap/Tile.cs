@@ -20,7 +20,7 @@ using System.IO;
 
 namespace GravityEditor.TileMap
 {
-    class Tile
+    public class Tile
     {
         public String Name;
         public Vector2 Position;

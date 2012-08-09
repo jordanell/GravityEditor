@@ -718,7 +718,7 @@ namespace GravityEditor
                 int i = 0;
                 foreach (Tile selitem in SelectedTiles)
                 {
-                        selitem.Rotation = initialrot[i] - deltatheta;
+                        selitem.pRotation = initialrot[i] - deltatheta;
 
                         if (kstate.IsKeyDown(Keys.LeftControl))
                         {

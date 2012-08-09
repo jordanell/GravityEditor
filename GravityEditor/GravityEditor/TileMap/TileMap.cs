@@ -13,7 +13,7 @@ using System.Xml.Serialization;
 
 namespace GravityEditor.TileMap
 {
-    class TileMap : IUndoable
+    public class TileMap : IUndoable
     {
         public class EditorVars
         {

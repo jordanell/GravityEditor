@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 
 namespace GravityEditor.TileMap
 {
-    class TileLayer
+    public class TileLayer
     {
         public String Name;
         public bool Visible;

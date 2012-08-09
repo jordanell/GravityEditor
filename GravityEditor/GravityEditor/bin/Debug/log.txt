@@ -1,7 +1,6 @@
-09/08/2012 2:56:37 PM.992 - Log file creadet.
-09/08/2012 2:56:37 PM.999 - Creating XNA Game object (GravityEditor).
-09/08/2012 2:56:38 PM.298 - Loading preferences.
-09/08/2012 2:56:38 PM.450 - Preferences loaded.
-09/08/2012 2:56:38 PM.450 - Creating new level.
-09/08/2012 2:56:39 PM.105 - New level created.
-09/08/2012 3:00:20 PM.224 - pictureBox1_Resize().
+09/08/2012 3:07:03 PM.164 - Log file creadet.
+09/08/2012 3:07:03 PM.171 - Creating XNA Game object (GravityEditor).
+09/08/2012 3:07:03 PM.499 - Loading preferences.
+09/08/2012 3:07:03 PM.655 - Preferences loaded.
+09/08/2012 3:07:03 PM.656 - Creating new level.
+09/08/2012 3:07:04 PM.309 - New level created.
