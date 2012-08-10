@@ -18,7 +18,6 @@ namespace GravityEditor.TileMap
         public class EditorVars
         {
             public int NextItemNumber;
-            public string ContentRootFolder;
             public Vector2 CameraPosition;
             public string Version;
         }
@@ -47,19 +46,6 @@ namespace GravityEditor.TileMap
             set
             {
                 editorrelated = value;
-            }
-        }
-
-        [XmlIgnore()]
-        public String ContentRootFolder
-        {
-            get
-            {
-                return EditorRelated.ContentRootFolder;
-            }
-            set
-            {
-                EditorRelated.ContentRootFolder = value;
             }
         }
 
@@ -173,7 +159,7 @@ namespace GravityEditor.TileMap
             {
                 foreach (Tile i in l.Tiles)
                 {
-                        i.texture_filename = RelativePath(ContentRootFolder, i.texture_fullpath);
+                        i.texture_filename = RelativePath(Preferences.Instance.DefaultContentRootFolder, i.texture_fullpath);
                 }
             }
 

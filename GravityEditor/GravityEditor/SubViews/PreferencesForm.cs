@@ -19,6 +19,7 @@ namespace GravityEditor.SubViews
         private void buttonOK_Click(object sender, EventArgs e)
         {
             Preferences.Instance.Export("preferences.xml");
+            MainWindow.Instance.loadFolder(Preferences.Instance.DefaultContentRootFolder);
             Close();
         }
 

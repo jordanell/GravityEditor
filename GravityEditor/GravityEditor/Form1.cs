@@ -670,5 +670,19 @@ namespace GravityEditor
                 mapTree.SelectedNode = mapTree.GetNodeAt(e.X, e.Y);
             }
         }
+
+        private void zoomCombo_TextChanged(object sender, EventArgs e)
+        {
+            if (Editor.Instance.camera != null)
+            {
+                if (zoomCombo.Text.Length > 0 && Editor.Instance != null)
+                {
+                    float zoom = float.Parse(zoomCombo.Text.Substring(0, zoomCombo.Text.Length - 1));
+                    Editor.Instance.camera.Scale = zoom / 100;
+                }
+            }
+            else
+                MessageBox.Show("The camera has not been initialized yet. Create or load a level to initialize the camera.");
+        }
     }
 }

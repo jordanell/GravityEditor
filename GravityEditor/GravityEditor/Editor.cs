@@ -91,35 +91,6 @@ namespace GravityEditor
 
         public void loadMap(TileMap.TileMap map)
         {
-            if (map.ContentRootFolder == null)
-            {
-                map.ContentRootFolder = Preferences.Instance.DefaultContentRootFolder;
-                if (!Directory.Exists(map.ContentRootFolder))
-                {
-                    Forms.DialogResult dr = Forms.MessageBox.Show(
-                        "The DefaultContentRootFolder \"" + map.ContentRootFolder + "\" (as set in the Settings Dialog) doesn't exist!\n"
-                        + "The ContentRootFolder of the new level will be set to the Editor's work directory (" + Forms.Application.StartupPath + ").\n"
-                        + "Please adjust the DefaultContentRootFolder in the Settings Dialog.\n"
-                        + "Do you want to open the Settings Dialog now?", "Error",
-                        Forms.MessageBoxButtons.YesNo, Forms.MessageBoxIcon.Exclamation);
-                    if (dr == Forms.DialogResult.Yes)
-                    {
-                        // Create a new settings form here
-                        PreferencesForm f = new PreferencesForm();
-                        f.Show();
-                    }
-                }
-            }
-            else
-            {
-                if (!Directory.Exists(map.ContentRootFolder))
-                {
-                    Forms.MessageBox.Show("The directory \"" + map.ContentRootFolder + "\" doesn't exist! "
-                        + "Please adjust the XML file before trying again.");
-                    return;
-                }
-            }
-
             TextureLoader.Instance.Clear();
 
             foreach (TileLayer layer in map.Layers)
@@ -134,7 +105,7 @@ namespace GravityEditor
             }
 
             this.map = map;
-            MainWindow.Instance.loadFolder(map.ContentRootFolder);
+            MainWindow.Instance.loadFolder(Preferences.Instance.DefaultContentRootFolder);
             if (map.Name == null)
                 map.Name = "Map_01";
 
@@ -827,7 +798,7 @@ namespace GravityEditor
             {
                 Vector2 maincameraposition = camera.Position;
                 camera.Position *= l.ScrollSpeed;
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.matrix);
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, camera.matrix);
 
                 l.drawInEditor(spriteBatch);
                 if (l == SelectedLayer && state == EditorState.selecting)
@@ -837,7 +808,7 @@ namespace GravityEditor
                 if (l == SelectedLayer && state == EditorState.brush)
                 {
                     spriteBatch.Draw(currentbrush.texture, new Vector2(mouseworldpos.X, mouseworldpos.Y), null, new Color(1f, 1f, 1f, 0.7f),
-                        0, new Vector2(currentbrush.texture.Width / 2, currentbrush.texture.Height / 2), 1, SpriteEffects.None, 0);
+                        0, Vector2.Zero, 1, SpriteEffects.None, 0);
                 }
                 spriteBatch.End();
                 //restore main camera position

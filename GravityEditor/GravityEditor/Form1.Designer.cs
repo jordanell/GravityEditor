@@ -586,6 +586,7 @@
             // 
             this.zoomCombo.Name = "zoomCombo";
             this.zoomCombo.Size = new System.Drawing.Size(121, 25);
+            this.zoomCombo.TextChanged += new System.EventHandler(this.zoomCombo_TextChanged);
             // 
             // toolStripSeparator3
             // 

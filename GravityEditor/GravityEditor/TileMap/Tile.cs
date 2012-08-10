@@ -144,17 +144,13 @@ namespace GravityEditor.TileMap
             this.TintColor = Microsoft.Xna.Framework.Color.White;
             loadIntoEditor();
             this.pPosition = position;
-
-            this.Origin = getTextureOrigin(texture);
-
-            Vector2 center = new Vector2(texture.Width / 2, texture.Height / 2);
-            this.pPosition -= (center - Origin);
+            this.pOrigin = getTextureOrigin(texture);
         }
 
         public bool loadIntoEditor()
         {
             if (layer != null) 
-                this.texture_fullpath = System.IO.Path.Combine(layer.map.ContentRootFolder + "\\", texture_filename);
+                this.texture_fullpath = System.IO.Path.Combine(Preferences.Instance.DefaultContentRootFolder + "\\", texture_filename);
 
             if (!File.Exists(texture_fullpath))
             {
