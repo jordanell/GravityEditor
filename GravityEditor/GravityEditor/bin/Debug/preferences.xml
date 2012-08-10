@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Preferences xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <ShowGrid>true</ShowGrid>
+  <ShowGrid>false</ShowGrid>
   <SnapToGrid>true</SnapToGrid>
   <ShowWorldOrigin>true</ShowWorldOrigin>
   <ColorSelectionFirst>
@@ -36,10 +36,10 @@
     <R>255</R>
     <G>255</G>
     <B>255</B>
-    <A>50</A>
-    <PackedValue>855638015</PackedValue>
+    <A>109</A>
+    <PackedValue>1845493759</PackedValue>
   </ColorSelectionBox>
-  <DefaultContentRootFolder>C:\Users\Jordan\Documents\agilefant\web\static\img</DefaultContentRootFolder>
+  <DefaultContentRootFolder>C:\Users\Jordan\Documents\Gravity\content</DefaultContentRootFolder>
   <CameraSpeed>500</CameraSpeed>
   <CameraFastSpeed>2000</CameraFastSpeed>
   <DefaultTextureOriginMethod>TopLeft</DefaultTextureOriginMethod>

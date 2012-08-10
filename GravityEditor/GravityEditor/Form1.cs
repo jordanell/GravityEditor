@@ -61,6 +61,13 @@ namespace GravityEditor
 
             listViewTexture.Clear();
 
+            Image img = Image.FromFile(System.IO.Directory.GetCurrentDirectory() + "\\..\\..\\Content\\folder.png");
+            imageList48.Images.Add(img);
+            imageList64.Images.Add(img);
+            imageList96.Images.Add(img);
+            imageList128.Images.Add(img);
+            imageList256.Images.Add(img);
+
             DirectoryInfo di = new DirectoryInfo(path);
             textBoxFolder.Text = di.FullName;
             DirectoryInfo[] folders = di.GetDirectories();
@@ -153,6 +160,19 @@ namespace GravityEditor
             Editor.Instance.loadMap(map);
             mapFileName = "untitled";
             dirtyFlag = false;
+        }
+
+        private void ActionCenterView(object sender, EventArgs e)
+        {
+            if (mapTree.SelectedNode.Tag is TileMap.TileMap)
+            {
+                Editor.Instance.camera.Position = Microsoft.Xna.Framework.Vector2.Zero;
+            }
+            if (mapTree.SelectedNode.Tag is Tile)
+            {
+                Tile i = (Tile)mapTree.SelectedNode.Tag;
+                Editor.Instance.camera.Position = i.pPosition;
+            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -499,6 +519,156 @@ namespace GravityEditor
             Logger.Instance.log("pictureBox1_Resize().");
             if (GravityEditor.Instance != null) GravityEditor.Instance.resizeBackBuffer(drawingBox.Width, drawingBox.Height);
             if (Editor.Instance != null && Editor.Instance.camera != null) Editor.Instance.camera.updateViewport(drawingBox.Width, drawingBox.Height);
+        }
+
+        private void mapTree_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Tag is TileMap.TileMap)
+            {
+                Editor.Instance.map.Visible = e.Node.Checked;
+            }
+            if (e.Node.Tag is TileLayer)
+            {
+                TileLayer l = (TileLayer)e.Node.Tag;
+                l.Visible = e.Node.Checked;
+            }
+            if (e.Node.Tag is Tile)
+            {
+                Tile i = (Tile)e.Node.Tag;
+                i.Visible = e.Node.Checked;
+            }
+        }
+
+        private void mapTree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (e.Label == null) return;
+
+            TreeNode[] nodes = mapTree.Nodes.Find(e.Label, true);
+            if (nodes.Length > 0)
+            {
+                MessageBox.Show("A layer or item with the name \"" + e.Label + "\" already exists in the level. Please use another name!");
+                e.CancelEdit = true;
+                return;
+            }
+            if (e.Node.Tag is TileMap.TileMap)
+            {
+                TileMap.TileMap l = (TileMap.TileMap)e.Node.Tag;
+                Editor.Instance.beginCommand("Rename Level (\"" + l.Name + "\" -> \"" + e.Label + "\")");
+                l.Name = e.Label;
+                e.Node.Name = e.Label;
+                Editor.Instance.endCommand();
+            }
+            if (e.Node.Tag is TileLayer)
+            {
+                TileLayer l = (TileLayer)e.Node.Tag;
+                Editor.Instance.beginCommand("Rename Layer (\"" + l.Name + "\" -> \"" + e.Label + "\")");
+                l.Name = e.Label;
+                e.Node.Name = e.Label;
+                Editor.Instance.endCommand();
+            }
+            if (e.Node.Tag is Tile)
+            {
+                Tile i = (Tile)e.Node.Tag;
+                Editor.Instance.beginCommand("Rename Item (\"" + i.Name + "\" -> \"" + e.Label + "\")");
+                i.Name = e.Label;
+                e.Node.Name = e.Label;
+                Editor.Instance.endCommand();
+            }
+            propertyGrid1.Refresh();
+            drawingBox.Select();
+        }
+
+        private void mapTree_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Tag is TileMap.TileMap)
+            {
+                Editor.Instance.selectMap();
+            }
+            if (e.Node.Tag is TileLayer)
+            {
+                TileLayer l = (TileLayer)e.Node.Tag;
+                Editor.Instance.selectLayer(l);
+            }
+            if (e.Node.Tag is Tile)
+            {
+                Tile i = (Tile)e.Node.Tag;
+                Editor.Instance.selectTile(i);
+            }
+        }
+
+        private void mapTree_DragDrop(object sender, DragEventArgs e)
+        {
+            Editor.Instance.endCommand();
+        }
+
+        private void mapTree_DragOver(object sender, DragEventArgs e)
+        {
+            //get source node
+            TreeNode sourcenode = (TreeNode)e.Data.GetData(typeof(TreeNode));
+
+            if (sourcenode == null)
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+            else e.Effect = DragDropEffects.Move;
+
+            //get destination node and select it
+            Point p = mapTree.PointToClient(new Point(e.X, e.Y));
+            TreeNode destnode = mapTree.GetNodeAt(p);
+            if (destnode.Tag is TileMap.TileMap) return;
+            mapTree.SelectedNode = destnode;
+
+            if (destnode != sourcenode)
+            {
+                Tile i1 = (Tile)sourcenode.Tag;
+                if (destnode.Tag is Tile)
+                {
+                    Tile i2 = (Tile)destnode.Tag;
+                    Editor.Instance.moveTileToLayer(i1, i2.layer, i2);
+                    int delta = 0;
+                    if (destnode.Index > sourcenode.Index && i1.layer == i2.layer) delta = 1;
+                    sourcenode.Remove();
+                    destnode.Parent.Nodes.Insert(destnode.Index + delta, sourcenode);
+                }
+                if (destnode.Tag is TileLayer)
+                {
+                    TileLayer l2 = (TileLayer)destnode.Tag;
+                    Editor.Instance.moveTileToLayer(i1, l2, null);
+                    sourcenode.Remove();
+                    destnode.Nodes.Insert(0, sourcenode);
+                }
+                Editor.Instance.selectTile(i1);
+                Editor.Instance.Draw(GravityEditor.Instance.spriteBatch);
+                GravityEditor.Instance.GraphicsDevice.Present();
+                Application.DoEvents();
+            }
+        }
+
+        private void mapTree_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            if (((TreeNode)e.Item).Tag is TileLayer) return;
+            if (((TreeNode)e.Item).Tag is TileMap.TileMap) return;
+            Editor.Instance.beginCommand("Drag Item");
+            DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+
+        private void mapTree_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.N) newLayerButton_Click(sender, e);
+            if (e.KeyCode == Keys.Delete) deleteButton_Click(sender, e);
+            if (e.KeyCode == Keys.F7) moveUpButton_Click(sender, e);
+            if (e.KeyCode == Keys.F8) moveDownButton_Click(sender, e);
+            if (e.KeyCode == Keys.F4) ActionCenterView(sender, e);
+            if (e.KeyCode == Keys.F2) mapTree.SelectedNode.BeginEdit();
+        }
+
+        private void mapTree_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                mapTree.SelectedNode = mapTree.GetNodeAt(e.X, e.Y);
+            }
         }
     }
 }

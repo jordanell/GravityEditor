@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using Forms = System.Windows.Forms;
 using GravityEditor.TileMap;
 using GravityEditor.Drawing;
+using GravityEditor.SubViews;
 
 namespace GravityEditor
 {
@@ -104,6 +105,8 @@ namespace GravityEditor
                     if (dr == Forms.DialogResult.Yes)
                     {
                         // Create a new settings form here
+                        PreferencesForm f = new PreferencesForm();
+                        f.Show();
                     }
                 }
             }

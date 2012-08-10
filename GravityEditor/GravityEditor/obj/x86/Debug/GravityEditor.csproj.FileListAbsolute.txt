@@ -10,3 +10,15 @@ C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityE
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\bin\Debug\GravityEditor.exe.config
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.SubViews.AddLayer.resources
 C:\Users\Jordan\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.SubViews.PreferencesForm.resources
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\bin\Debug\GravityEditor.exe.config
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.exe
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.pdb
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\bin\Debug\GravityEditor.exe
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\bin\Debug\GravityEditor.pdb
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.MainWindow.resources
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.Properties.Resources.resources
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.SubViews.AddLayer.resources
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GravityEditor.SubViews.PreferencesForm.resources
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\Jordan\Documents\GravityEditor\GravityEditor\GravityEditor\obj\x86\Debug\GenerateResource.write.1.tlog

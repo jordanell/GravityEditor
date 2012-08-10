@@ -48,6 +48,7 @@
             this.contextControl = new System.Windows.Forms.TabControl();
             this.texturePage = new System.Windows.Forms.TabPage();
             this.listViewTexture = new System.Windows.Forms.ListView();
+            this.imageList64 = new System.Windows.Forms.ImageList(this.components);
             this.chooseFolder = new System.Windows.Forms.Button();
             this.buttonFolderUp = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -80,7 +81,6 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.preferencesButton = new System.Windows.Forms.ToolStripButton();
             this.imageList48 = new System.Windows.Forms.ImageList(this.components);
-            this.imageList64 = new System.Windows.Forms.ImageList(this.components);
             this.imageList96 = new System.Windows.Forms.ImageList(this.components);
             this.imageList128 = new System.Windows.Forms.ImageList(this.components);
             this.imageList256 = new System.Windows.Forms.ImageList(this.components);
@@ -292,6 +292,12 @@
             this.listViewTexture.GiveFeedback += new System.Windows.Forms.GiveFeedbackEventHandler(this.listViewTexture_GiveFeedback);
             this.listViewTexture.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewTexture_MouseDoubleClick);
             // 
+            // imageList64
+            // 
+            this.imageList64.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageList64.ImageSize = new System.Drawing.Size(64, 64);
+            this.imageList64.TransparentColor = System.Drawing.Color.Transparent;
+            // 
             // chooseFolder
             // 
             this.chooseFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -404,6 +410,14 @@
             this.mapTree.Name = "mapTree";
             this.mapTree.Size = new System.Drawing.Size(340, 263);
             this.mapTree.TabIndex = 0;
+            this.mapTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.mapTree_AfterLabelEdit);
+            this.mapTree.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.mapTree_AfterCheck);
+            this.mapTree.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.mapTree_ItemDrag);
+            this.mapTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.mapTree_AfterSelect);
+            this.mapTree.DragDrop += new System.Windows.Forms.DragEventHandler(this.mapTree_DragDrop);
+            this.mapTree.DragOver += new System.Windows.Forms.DragEventHandler(this.mapTree_DragOver);
+            this.mapTree.KeyDown += new System.Windows.Forms.KeyEventHandler(this.mapTree_KeyDown);
+            this.mapTree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapTree_MouseDown);
             // 
             // toolStrip2
             // 
@@ -635,12 +649,6 @@
             this.imageList48.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
             this.imageList48.ImageSize = new System.Drawing.Size(48, 48);
             this.imageList48.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // imageList64
-            // 
-            this.imageList64.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageList64.ImageSize = new System.Drawing.Size(64, 64);
-            this.imageList64.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // imageList96
             // 
