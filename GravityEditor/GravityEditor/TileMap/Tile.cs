@@ -29,6 +29,7 @@ namespace GravityEditor.TileMap
         public bool Visible;
         public Color TintColor;
         public Vector2 Origin;
+        public bool Physics;
 
         public String texture_filename;
         private Texture2D texture;
@@ -113,6 +114,19 @@ namespace GravityEditor.TileMap
             set
             {
                 TintColor = value;
+            }
+        }
+
+        [XmlIgnore()]
+        public bool pPhysics
+        {
+            get
+            {
+                return Physics;
+            }
+            set
+            {
+                Physics = value;
             }
         }
 

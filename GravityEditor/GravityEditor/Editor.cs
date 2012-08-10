@@ -163,7 +163,7 @@ namespace GravityEditor
                 if (nodes.Length > 0)
                 {
                     List<Tile> selecteditemscopy = new List<Tile>(SelectedTiles);
-                    MainWindow.Instance.propertyGrid1.SelectedObject = SelectedTiles[0];
+                    MainWindow.Instance.propertyGrid1.SelectedObjects = SelectedTiles.ToArray();
                     MainWindow.Instance.mapTree.SelectedNode = nodes[0];
                     MainWindow.Instance.mapTree.SelectedNode.EnsureVisible();
                     SelectedTiles = selecteditemscopy;
